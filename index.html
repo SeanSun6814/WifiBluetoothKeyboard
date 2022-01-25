@@ -68,7 +68,7 @@
         console.log("requestUrl: " + requestUrl);
         makeRequest(requestUrl, (data) => {
             if (data.status !== 200)
-                console.log("REQUEST_FAILED [" + data.status + "]: " + data.res);
+                console.log("REQUEST_FAILED [" + data.status + "]: " + requestUrl + "" + data.res);
             // console.log(data);
             handleStringArrInput();
         });
