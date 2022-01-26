@@ -40,7 +40,7 @@ function init() {
         updateConnectionStatus();
     }, 5000);
     avgSpeedStartTime = getMillis();
-    setInterval(() => { updateRunningAverage() }, 1000);
+    setInterval(() => { updateRunningAverage() }, 500);
 }
 
 function handleBodyClick() {
@@ -53,6 +53,7 @@ function updateConnectionStatus() {
 }
 
 function requestSend(code, isArr) {
+    // requestCount++;
     if (isArr) {
         sendQueue = sendQueue.concat(code);
     } else {
@@ -74,20 +75,19 @@ function updateStatusLabel(connected) {
 }
 
 function updateAvgSpeedLabel(reqPerSec) {
-    let wpm = reqPerSec * 60 / 50;
+    let wpm = reqPerSec * 60 / 7;
     avgSpeedBox.innerHTML = Math.floor(wpm) + " WPM";
 }
 
 function updateRunningAverage() {
-    let avgWindowSize = 10;
+    let avgWindowSize = 3;
     let newValue = requestCount * 1000 / (getMillis() - avgSpeedStartTime);
-    requestCount = 0;
-    avgSpeedStartTime = getMillis();
-    
     avgSpeed -= avgSpeed / avgWindowSize;
     avgSpeed += newValue / avgWindowSize;
     updateAvgSpeedLabel(avgSpeed);
-    console.log(newValue, getMillis() - avgSpeedStartTime, avgSpeed);
+
+    requestCount = 0;
+    avgSpeedStartTime = getMillis();
 }
 
 function inputboxHandler() {
@@ -100,8 +100,6 @@ function handleStringArrInput() {
     sleeping = false;
     requestStartTime = getMillis();
     if (sendQueue.length === 0) {
-        // updateRunningAverage();
-        // clearInterval(avgSpeedBackgroundWorker);
         return sleeping = true;
     }
     let char = sendQueue.shift();
