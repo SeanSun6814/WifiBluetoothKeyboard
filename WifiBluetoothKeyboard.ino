@@ -61,7 +61,7 @@ void performRequest(String line) {
     char c = line.charAt(i);
     if (c == '/') {
       performAction(action);
-      delay(100);
+      
       action = "";
     } else {
       action += c;
@@ -74,7 +74,7 @@ void performAction(String code) {
   code.trim();
 //  Serial.println("Processing: " + code);
   if (code.length() == 0 || code.equalsIgnoreCase("GET")) return;
-
+  delay(250);
   if (code.equals("ret")) {
     bleKeyboard.write(KEY_RETURN);
   } else if (code.equals("bk")) {
