@@ -8,8 +8,8 @@
 </head>
 
 <body onload="init()">
-    <input id="serverIp" value="192.168.4.1" />
-    <input id="inputbox" placeholder="Paste text here..." />
+    <input id="serverIp" value="192.168.4.1" /><br>
+    <textarea id="inputbox" placeholder="Paste text here..."></textarea>
 </body>
 <script>
     let inputbox;
@@ -87,6 +87,7 @@
 
     function translateRequest(a) {
         if (a === "Enter") { return "ret" }
+        else if (a === "\n") { return "ret" }
         else if (a === "Backspace") { return "bk" }
         else if (a === "ArrowUp") { return "up" }
         else if (a === "ArrowDown") { return "dn" }
