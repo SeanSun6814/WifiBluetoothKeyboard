@@ -9,7 +9,9 @@
 </head>
 
 <body onload="init()" onclick="handleBodyClick()">
-    <input id="serverIp" value="192.168.4.1" placeholder="Server IP Address" /><br>
+    <input id="serverIp" value="192.168.4.1" placeholder="Server IP Address" />
+    <button onclick="clearSendQueue()">Clear Queue</button>
+    <br>
     <textarea id="inputbox" placeholder="Paste text here..."></textarea>
     <div class="speedbox">
         <div class="speedbox__score" id="speedbox-score"></div>

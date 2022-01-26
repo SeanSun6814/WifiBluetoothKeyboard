@@ -44,6 +44,10 @@ function init() {
     createAvgSpeedBackgroundWorker();
 }
 
+function clearSendQueue() {
+    sendQueue = [];
+}
+
 function createAvgSpeedBackgroundWorker() {
     avgSpeedStartTime = getMillis();
     avgSpeedBackgroundWorker = setInterval(() => { updateRunningAverage() }, 200);
