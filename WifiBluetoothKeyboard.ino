@@ -3,306 +3,297 @@
 #include <WiFiClient.h>
 #include <WiFiAP.h>
 
-#define LED_BUILTIN 2   // Set the GPIO pin where you connected your test LED or comment this line out if your dev board has a built-in LED
+#define LED_BUILTIN 2
 #define USING_CORS_FEATURE true
 
-// Set these to your desired credentials.
-const char *ssid = "WifiKeyboard";
-const char *password = "mySecretPassword";
+const char* ssid = "WifiKeyboard";
+const char* password = "mySecretPassword";
 
 WiFiServer server(80);
 BleKeyboard bleKeyboard;
 
 void setup() {
+//  Serial.begin(115200);
   pinMode(LED_BUILTIN, OUTPUT);
-
-  //  Serial.begin(115200);
-  //  Serial.println();
-  //  Serial.println("Configuring access point...");
-
-  // You can remove the password parameter if you want the AP to be open.
   WiFi.softAP(ssid, password);
   IPAddress myIP = WiFi.softAPIP();
-  //  Serial.print("AP IP address: ");
-  //  Serial.println(myIP);
-  // server.enableCORS(true);
   server.begin();
-
-  //  Serial.println("Server started");
   bleKeyboard.begin();
-  //  Serial.println("Bluetooth started");
 }
 
 void loop() {
-  WiFiClient client = server.available();   // listen for incoming clients
+  WiFiClient client = server.available();
 
-  if (client) {                             // if you get a client,
+  if (client) {
     digitalWrite(LED_BUILTIN, HIGH);
-    //    Serial.println("New Client.");           // print a message out the serial port
-    String currentLine = "";                // make a String to hold incoming data from the client
-    while (client.connected()) {            // loop while the client's connected
-      if (client.available()) {             // if there's bytes to read from the client,
-        char c = client.read();             // read a byte, then
-        Serial.write(c);                    // print it out the serial monitor
-        if (c == '\n') {                    // if the byte is a newline character
-
-          // if the current line is blank, you got two newline characters in a row.
-          // that's the end of the client HTTP request, so send a response:
+    String currentLine = "";
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        if (c == '\n') {
           if (currentLine.length() == 0) {
-            // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
-            // and a content-type so the client knows what's coming, then a blank line:
             client.println("HTTP/1.1 200 OK");
             client.println("Content-type:text/html");
             client.println("Access-Control-Allow-Origin: *");
             client.println("Connection: close");
-
-            //            client.println();
-            //            // the content of the HTTP response follows the header:
-            //            client.print("Click <a href=\"/H\">here</a> to turn ON the LED.<br>");
-            //            client.print("Click <a href=\"/L\">here</a> to turn OFF the LED.<br>");
-
-            // The HTTP response ends with another blank line:
             client.println();
-            // break out of the while loop:
             digitalWrite(LED_BUILTIN, LOW);
             break;
-          } else {    // if you got a newline, then clear currentLine:
+          } else {
             currentLine = "";
           }
-        } else if (c != '\r') {  // if you got anything else but a carriage return character,
-          currentLine += c;      // add it to the end of the currentLine
+        } else if (c != '\r') {
+          currentLine += c;
         }
-
-        // Check to see if the client request was "GET /H" or "GET /L":
-
-        //          digitalWrite(LED_BUILTIN, HIGH);               // GET /H turns the LED on
-        //          digitalWrite(LED_BUILTIN, LOW);                // GET /L turns the LED off
-        //        Serial.println(currentLine);
-        if (currentLine.endsWith("GET /ret/EF")) {
-          bleKeyboard.write(KEY_RETURN);
-        } else if (currentLine.endsWith("GET /bk/EF")) {
-          bleKeyboard.write(KEY_BACKSPACE);
-        }  else if (currentLine.endsWith("GET /up/EF")) {
-          bleKeyboard.write(KEY_UP_ARROW);
-        }  else if (currentLine.endsWith("GET /dn/EF")) {
-          bleKeyboard.write(KEY_DOWN_ARROW);
-        }  else if (currentLine.endsWith("GET /lf/EF")) {
-          bleKeyboard.write(KEY_LEFT_ARROW);
-        }  else if (currentLine.endsWith("GET /rt/EF")) {
-          bleKeyboard.write(KEY_RIGHT_ARROW);
-        }  else if (currentLine.endsWith("GET /de/EF")) {
-          bleKeyboard.write(KEY_DELETE);
-        } else if (currentLine.endsWith("GET /sp/EF")) {
-          bleKeyboard.print(" ");
-        } else if (currentLine.endsWith("GET /a/EF")) {
-          bleKeyboard.print("a");
-        } else if (currentLine.endsWith("GET /b/EF")) {
-          bleKeyboard.print("b");
-        } else if (currentLine.endsWith("GET /c/EF")) {
-          bleKeyboard.print("c");
-        } else if (currentLine.endsWith("GET /d/EF")) {
-          bleKeyboard.print("d");
-        } else if (currentLine.endsWith("GET /e/EF")) {
-          bleKeyboard.print("e");
-        } else if (currentLine.endsWith("GET /f/EF")) {
-          bleKeyboard.print("f");
-        } else if (currentLine.endsWith("GET /g/EF")) {
-          bleKeyboard.print("g");
-        } else if (currentLine.endsWith("GET /h/EF")) {
-          bleKeyboard.print("h");
-        } else if (currentLine.endsWith("GET /i/EF")) {
-          bleKeyboard.print("i");
-        } else if (currentLine.endsWith("GET /j/EF")) {
-          bleKeyboard.print("j");
-        } else if (currentLine.endsWith("GET /k/EF")) {
-          bleKeyboard.print("k");
-        } else if (currentLine.endsWith("GET /l/EF")) {
-          bleKeyboard.print("l");
-        } else if (currentLine.endsWith("GET /m/EF")) {
-          bleKeyboard.print("m");
-        } else if (currentLine.endsWith("GET /n/EF")) {
-          bleKeyboard.print("n");
-        } else if (currentLine.endsWith("GET /o/EF")) {
-          bleKeyboard.print("o");
-        } else if (currentLine.endsWith("GET /p/EF")) {
-          bleKeyboard.print("p");
-        } else if (currentLine.endsWith("GET /q/EF")) {
-          bleKeyboard.print("q");
-        } else if (currentLine.endsWith("GET /r/EF")) {
-          bleKeyboard.print("r");
-        } else if (currentLine.endsWith("GET /s/EF")) {
-          bleKeyboard.print("s");
-        } else if (currentLine.endsWith("GET /t/EF")) {
-          bleKeyboard.print("t");
-        } else if (currentLine.endsWith("GET /u/EF")) {
-          bleKeyboard.print("u");
-        } else if (currentLine.endsWith("GET /v/EF")) {
-          bleKeyboard.print("v");
-        } else if (currentLine.endsWith("GET /w/EF")) {
-          bleKeyboard.print("w");
-        } else if (currentLine.endsWith("GET /x/EF")) {
-          bleKeyboard.print("x");
-        } else if (currentLine.endsWith("GET /y/EF")) {
-          bleKeyboard.print("y");
-        } else if (currentLine.endsWith("GET /z/EF")) {
-          bleKeyboard.print("z");
-        } else if (currentLine.endsWith("GET /0/EF")) {
-          bleKeyboard.print("0");
-        } else if (currentLine.endsWith("GET /1/EF")) {
-          bleKeyboard.print("1");
-        } else if (currentLine.endsWith("GET /2/EF")) {
-          bleKeyboard.print("2");
-        } else if (currentLine.endsWith("GET /3/EF")) {
-          bleKeyboard.print("3");
-        } else if (currentLine.endsWith("GET /4/EF")) {
-          bleKeyboard.print("4");
-        } else if (currentLine.endsWith("GET /5/EF")) {
-          bleKeyboard.print("5");
-        } else if (currentLine.endsWith("GET /6/EF")) {
-          bleKeyboard.print("6");
-        } else if (currentLine.endsWith("GET /7/EF")) {
-          bleKeyboard.print("7");
-        } else if (currentLine.endsWith("GET /8/EF")) {
-          bleKeyboard.print("8");
-        } else if (currentLine.endsWith("GET /9/EF")) {
-          bleKeyboard.print("9");
-        } else if (currentLine.endsWith("GET /A/EF")) {
-          bleKeyboard.print("A");
-        } else if (currentLine.endsWith("GET /B/EF")) {
-          bleKeyboard.print("B");
-        } else if (currentLine.endsWith("GET /C/EF")) {
-          bleKeyboard.print("C");
-        } else if (currentLine.endsWith("GET /D/EF")) {
-          bleKeyboard.print("D");
-        } else if (currentLine.endsWith("GET /E/EF")) {
-          bleKeyboard.print("E");
-        } else if (currentLine.endsWith("GET /F/EF")) {
-          bleKeyboard.print("F");
-        } else if (currentLine.endsWith("GET /G/EF")) {
-          bleKeyboard.print("G");
-        } else if (currentLine.endsWith("GET /H/EF")) {
-          bleKeyboard.print("H");
-        } else if (currentLine.endsWith("GET /I/EF")) {
-          bleKeyboard.print("I");
-        } else if (currentLine.endsWith("GET /J/EF")) {
-          bleKeyboard.print("J");
-        } else if (currentLine.endsWith("GET /K/EF")) {
-          bleKeyboard.print("K");
-        } else if (currentLine.endsWith("GET /L/EF")) {
-          bleKeyboard.print("L");
-        } else if (currentLine.endsWith("GET /M/EF")) {
-          bleKeyboard.print("M");
-        } else if (currentLine.endsWith("GET /N/EF")) {
-          bleKeyboard.print("N");
-        } else if (currentLine.endsWith("GET /O/EF")) {
-          bleKeyboard.print("O");
-        } else if (currentLine.endsWith("GET /P/EF")) {
-          bleKeyboard.print("P");
-        } else if (currentLine.endsWith("GET /Q/EF")) {
-          bleKeyboard.print("Q");
-        } else if (currentLine.endsWith("GET /R/EF")) {
-          bleKeyboard.print("R");
-        } else if (currentLine.endsWith("GET /S/EF")) {
-          bleKeyboard.print("S");
-        } else if (currentLine.endsWith("GET /T/EF")) {
-          bleKeyboard.print("T");
-        } else if (currentLine.endsWith("GET /U/EF")) {
-          bleKeyboard.print("U");
-        } else if (currentLine.endsWith("GET /V/EF")) {
-          bleKeyboard.print("V");
-        } else if (currentLine.endsWith("GET /W/EF")) {
-          bleKeyboard.print("W");
-        } else if (currentLine.endsWith("GET /X/EF")) {
-          bleKeyboard.print("X");
-        } else if (currentLine.endsWith("GET /Y/EF")) {
-          bleKeyboard.print("Y");
-        } else if (currentLine.endsWith("GET /Z/EF")) {
-          bleKeyboard.print("Z");
-        } else if (currentLine.endsWith("GET /bt/EF")) {
-          bleKeyboard.print("`");
-        } else if (currentLine.endsWith("GET /td/EF")) {
-          bleKeyboard.print("~");
-        } else if (currentLine.endsWith("GET /em/EF")) {
-          bleKeyboard.print("!");
-        } else if (currentLine.endsWith("GET /at/EF")) {
-          bleKeyboard.print("@");
-        } else if (currentLine.endsWith("GET /ht/EF")) {
-          bleKeyboard.print("#");
-        } else if (currentLine.endsWith("GET /dr/EF")) {
-          bleKeyboard.print("$");
-        } else if (currentLine.endsWith("GET /pc/EF")) {
-          bleKeyboard.print("%");
-        } else if (currentLine.endsWith("GET /pr/EF")) {
-          bleKeyboard.print("^");
-        } else if (currentLine.endsWith("GET /ad/EF")) {
-          bleKeyboard.print("&");
-        } else if (currentLine.endsWith("GET /st/EF")) {
-          bleKeyboard.print("*");
-        } else if (currentLine.endsWith("GET /op/EF")) {
-          bleKeyboard.print("(");
-        } else if (currentLine.endsWith("GET /cp/EF")) {
-          bleKeyboard.print(")");
-        } else if (currentLine.endsWith("GET /ds/EF")) {
-          bleKeyboard.print("-");
-        } else if (currentLine.endsWith("GET /us/EF")) {
-          bleKeyboard.print("_");
-        } else if (currentLine.endsWith("GET /eq/EF")) {
-          bleKeyboard.print("=");
-        } else if (currentLine.endsWith("GET /pl/EF")) {
-          bleKeyboard.print("+");
-        } else if (currentLine.endsWith("GET /so/EF")) {
-          bleKeyboard.print("[");
-        } else if (currentLine.endsWith("GET /co/EF")) {
-          bleKeyboard.print("{");
-        } else if (currentLine.endsWith("GET /sc/EF")) {
-          bleKeyboard.print("]");
-        } else if (currentLine.endsWith("GET /cc/EF")) {
-          bleKeyboard.print("}");
-        } else if (currentLine.endsWith("GET /bs/EF")) {
-          bleKeyboard.print("\\");
-        } else if (currentLine.endsWith("GET /vb/EF")) {
-          bleKeyboard.print("|");
-        } else if (currentLine.endsWith("GET /sm/EF")) {
-          bleKeyboard.print(";");
-        } else if (currentLine.endsWith("GET /cn/EF")) {
-          bleKeyboard.print(":");
-        } else if (currentLine.endsWith("GET /sq/EF")) {
-          bleKeyboard.print("'");
-        } else if (currentLine.endsWith("GET /dq/EF")) {
-          bleKeyboard.print("\"");
-        } else if (currentLine.endsWith("GET /cm/EF")) {
-          bleKeyboard.print(",");
-        } else if (currentLine.endsWith("GET /lt/EF")) {
-          bleKeyboard.print("<");
-        } else if (currentLine.endsWith("GET /dt/EF")) {
-          bleKeyboard.print(".");
-        } else if (currentLine.endsWith("GET /gt/EF")) {
-          bleKeyboard.print(">");
-        } else if (currentLine.endsWith("GET /fs/EF")) {
-          bleKeyboard.print("/");
-        } else if (currentLine.endsWith("GET /qm/EF")) {
-          bleKeyboard.print("?");
-        } else if (currentLine.endsWith("GET /ta/EF")) {
-          bleKeyboard.write(KEY_TAB);
-        } else if (currentLine.endsWith("GET /es/EF")) {
-          bleKeyboard.write(KEY_ESC);
-        } else if (currentLine.endsWith("GET /ct/EF")) {
-          bleKeyboard.press(KEY_LEFT_CTRL);
-        } else if (currentLine.endsWith("GET /sf/EF")) {
-          bleKeyboard.press(KEY_LEFT_SHIFT);
-        } else if (currentLine.endsWith("GET /al/EF")) {
-          bleKeyboard.press(KEY_LEFT_ALT);
-        } else if (currentLine.endsWith("GET /ctr/EF")) {
-          bleKeyboard.release(KEY_LEFT_CTRL);
-        } else if (currentLine.endsWith("GET /sfr/EF")) {
-          bleKeyboard.release(KEY_LEFT_SHIFT);
-        } else if (currentLine.endsWith("GET /alr/EF")) {
-          bleKeyboard.release(KEY_LEFT_ALT);
+        if (currentLine.startsWith("GET") && currentLine.endsWith("/EF")) {
+          performRequest(currentLine);
         }
       }
     }
-    // close the connection:
     client.stop();
-    //    Serial.println("Client Disconnected.");
+  }
+}
+
+void performRequest(String line) {
+  int len = line.length();
+  String action = "";
+  for (int i = 0; i < len; i++) {
+    char c = line.charAt(i);
+    if (c == '/') {
+      performAction(action);
+      delay(100);
+      action = "";
+    } else {
+      action += c;
+    }
+  }
+}
+
+
+void performAction(String code) {
+  code.trim();
+//  Serial.println("Processing: " + code);
+  if (code.length() == 0 || code.equalsIgnoreCase("GET")) return;
+
+  if (code.equals("ret")) {
+    bleKeyboard.write(KEY_RETURN);
+  } else if (code.equals("bk")) {
+    bleKeyboard.write(KEY_BACKSPACE);
+  } else if (code.equals("up")) {
+    bleKeyboard.write(KEY_UP_ARROW);
+  } else if (code.equals("dn")) {
+    bleKeyboard.write(KEY_DOWN_ARROW);
+  } else if (code.equals("lf")) {
+    bleKeyboard.write(KEY_LEFT_ARROW);
+  } else if (code.equals("rt")) {
+    bleKeyboard.write(KEY_RIGHT_ARROW);
+  } else if (code.equals("de")) {
+    bleKeyboard.write(KEY_DELETE);
+  } else if (code.equals("sp")) {
+    bleKeyboard.print(" ");
+  } else if (code.equals("a")) {
+    bleKeyboard.print("a");
+  } else if (code.equals("b")) {
+    bleKeyboard.print("b");
+  } else if (code.equals("c")) {
+    bleKeyboard.print("c");
+  } else if (code.equals("d")) {
+    bleKeyboard.print("d");
+  } else if (code.equals("e")) {
+    bleKeyboard.print("e");
+  } else if (code.equals("f")) {
+    bleKeyboard.print("f");
+  } else if (code.equals("g")) {
+    bleKeyboard.print("g");
+  } else if (code.equals("h")) {
+    bleKeyboard.print("h");
+  } else if (code.equals("i")) {
+    bleKeyboard.print("i");
+  } else if (code.equals("j")) {
+    bleKeyboard.print("j");
+  } else if (code.equals("k")) {
+    bleKeyboard.print("k");
+  } else if (code.equals("l")) {
+    bleKeyboard.print("l");
+  } else if (code.equals("m")) {
+    bleKeyboard.print("m");
+  } else if (code.equals("n")) {
+    bleKeyboard.print("n");
+  } else if (code.equals("o")) {
+    bleKeyboard.print("o");
+  } else if (code.equals("p")) {
+    bleKeyboard.print("p");
+  } else if (code.equals("q")) {
+    bleKeyboard.print("q");
+  } else if (code.equals("r")) {
+    bleKeyboard.print("r");
+  } else if (code.equals("s")) {
+    bleKeyboard.print("s");
+  } else if (code.equals("t")) {
+    bleKeyboard.print("t");
+  } else if (code.equals("u")) {
+    bleKeyboard.print("u");
+  } else if (code.equals("v")) {
+    bleKeyboard.print("v");
+  } else if (code.equals("w")) {
+    bleKeyboard.print("w");
+  } else if (code.equals("x")) {
+    bleKeyboard.print("x");
+  } else if (code.equals("y")) {
+    bleKeyboard.print("y");
+  } else if (code.equals("z")) {
+    bleKeyboard.print("z");
+  } else if (code.equals("0")) {
+    bleKeyboard.print("0");
+  } else if (code.equals("1")) {
+    bleKeyboard.print("1");
+  } else if (code.equals("2")) {
+    bleKeyboard.print("2");
+  } else if (code.equals("3")) {
+    bleKeyboard.print("3");
+  } else if (code.equals("4")) {
+    bleKeyboard.print("4");
+  } else if (code.equals("5")) {
+    bleKeyboard.print("5");
+  } else if (code.equals("6")) {
+    bleKeyboard.print("6");
+  } else if (code.equals("7")) {
+    bleKeyboard.print("7");
+  } else if (code.equals("8")) {
+    bleKeyboard.print("8");
+  } else if (code.equals("9")) {
+    bleKeyboard.print("9");
+  } else if (code.equals("A")) {
+    bleKeyboard.print("A");
+  } else if (code.equals("B")) {
+    bleKeyboard.print("B");
+  } else if (code.equals("C")) {
+    bleKeyboard.print("C");
+  } else if (code.equals("D")) {
+    bleKeyboard.print("D");
+  } else if (code.equals("E")) {
+    bleKeyboard.print("E");
+  } else if (code.equals("F")) {
+    bleKeyboard.print("F");
+  } else if (code.equals("G")) {
+    bleKeyboard.print("G");
+  } else if (code.equals("H")) {
+    bleKeyboard.print("H");
+  } else if (code.equals("I")) {
+    bleKeyboard.print("I");
+  } else if (code.equals("J")) {
+    bleKeyboard.print("J");
+  } else if (code.equals("K")) {
+    bleKeyboard.print("K");
+  } else if (code.equals("L")) {
+    bleKeyboard.print("L");
+  } else if (code.equals("M")) {
+    bleKeyboard.print("M");
+  } else if (code.equals("N")) {
+    bleKeyboard.print("N");
+  } else if (code.equals("O")) {
+    bleKeyboard.print("O");
+  } else if (code.equals("P")) {
+    bleKeyboard.print("P");
+  } else if (code.equals("Q")) {
+    bleKeyboard.print("Q");
+  } else if (code.equals("R")) {
+    bleKeyboard.print("R");
+  } else if (code.equals("S")) {
+    bleKeyboard.print("S");
+  } else if (code.equals("T")) {
+    bleKeyboard.print("T");
+  } else if (code.equals("U")) {
+    bleKeyboard.print("U");
+  } else if (code.equals("V")) {
+    bleKeyboard.print("V");
+  } else if (code.equals("W")) {
+    bleKeyboard.print("W");
+  } else if (code.equals("X")) {
+    bleKeyboard.print("X");
+  } else if (code.equals("Y")) {
+    bleKeyboard.print("Y");
+  } else if (code.equals("Z")) {
+    bleKeyboard.print("Z");
+  } else if (code.equals("bt")) {
+    bleKeyboard.print("`");
+  } else if (code.equals("td")) {
+    bleKeyboard.print("~");
+  } else if (code.equals("em")) {
+    bleKeyboard.print("!");
+  } else if (code.equals("at")) {
+    bleKeyboard.print("@");
+  } else if (code.equals("ht")) {
+    bleKeyboard.print("#");
+  } else if (code.equals("dr")) {
+    bleKeyboard.print("$");
+  } else if (code.equals("pc")) {
+    bleKeyboard.print("%");
+  } else if (code.equals("pr")) {
+    bleKeyboard.print("^");
+  } else if (code.equals("ad")) {
+    bleKeyboard.print("&");
+  } else if (code.equals("st")) {
+    bleKeyboard.print("*");
+  } else if (code.equals("op")) {
+    bleKeyboard.print("(");
+  } else if (code.equals("cp")) {
+    bleKeyboard.print(")");
+  } else if (code.equals("ds")) {
+    bleKeyboard.print("-");
+  } else if (code.equals("us")) {
+    bleKeyboard.print("_");
+  } else if (code.equals("eq")) {
+    bleKeyboard.print("=");
+  } else if (code.equals("pl")) {
+    bleKeyboard.print("+");
+  } else if (code.equals("so")) {
+    bleKeyboard.print("[");
+  } else if (code.equals("co")) {
+    bleKeyboard.print("{");
+  } else if (code.equals("sc")) {
+    bleKeyboard.print("]");
+  } else if (code.equals("cc")) {
+    bleKeyboard.print("}");
+  } else if (code.equals("bs")) {
+    bleKeyboard.print("\\");
+  } else if (code.equals("vb")) {
+    bleKeyboard.print("|");
+  } else if (code.equals("sm")) {
+    bleKeyboard.print(";");
+  } else if (code.equals("cn")) {
+    bleKeyboard.print(":");
+  } else if (code.equals("sq")) {
+    bleKeyboard.print("'");
+  } else if (code.equals("dq")) {
+    bleKeyboard.print("\"");
+  } else if (code.equals("cm")) {
+    bleKeyboard.print(",");
+  } else if (code.equals("lt")) {
+    bleKeyboard.print("<");
+  } else if (code.equals("dt")) {
+    bleKeyboard.print(".");
+  } else if (code.equals("gt")) {
+    bleKeyboard.print(">");
+  } else if (code.equals("fs")) {
+    bleKeyboard.print("/");
+  } else if (code.equals("qm")) {
+    bleKeyboard.print("?");
+  } else if (code.equals("ta")) {
+    bleKeyboard.write(KEY_TAB);
+  } else if (code.equals("es")) {
+    bleKeyboard.write(KEY_ESC);
+  } else if (code.equals("ct")) {
+    bleKeyboard.press(KEY_LEFT_CTRL);
+  } else if (code.equals("sf")) {
+    bleKeyboard.press(KEY_LEFT_SHIFT);
+  } else if (code.equals("al")) {
+    bleKeyboard.press(KEY_LEFT_ALT);
+  } else if (code.equals("ctr")) {
+    bleKeyboard.release(KEY_LEFT_CTRL);
+  } else if (code.equals("sfr")) {
+    bleKeyboard.release(KEY_LEFT_SHIFT);
+  } else if (code.equals("alr")) {
+    bleKeyboard.release(KEY_LEFT_ALT);
   }
 }

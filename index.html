@@ -8,8 +8,8 @@
 </head>
 
 <body onload="init()">
-    <input id="serverIp" value="192.168.4.1" />
-    <input id="inputbox" placeholder="Paste text here..." />
+    <input id="serverIp" value="192.168.4.1" /><br>
+    <textarea id="inputbox" placeholder="Paste text here..." rows="2" cols="20"></textarea>
 </body>
 <script>
     let inputbox;
@@ -62,9 +62,13 @@
     function handleStringArrInput() {
         sleeping = false;
         if (sendQueue.length === 0) return sleeping = true;
-        let char = sendQueue.shift();
+
+        let actions = "";
+        while (sendQueue.length > 0 && actions.length < 100) {
+            actions += translateRequest(sendQueue.shift()) + "/"
+        }
         // console.log("SendSeq: char[" + char + "], str[" + str + "]");
-        let requestUrl = "http://" + serverIpInputbox.value + "/" + translateRequest(char) + "/EF/";
+        let requestUrl = "http://" + serverIpInputbox.value + "/" + actions + "EF/";
         console.log("requestUrl: " + requestUrl);
         makeRequest(requestUrl, (data) => {
             if (data.status !== 200)
@@ -87,6 +91,7 @@
 
     function translateRequest(a) {
         if (a === "Enter") { return "ret" }
+        if (a === "\n") { return "ret" }
         else if (a === "Backspace") { return "bk" }
         else if (a === "ArrowUp") { return "up" }
         else if (a === "ArrowDown") { return "dn" }
