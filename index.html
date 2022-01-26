@@ -3,17 +3,24 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keyboard</title>
     <script src="script.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body onload="init()" onclick="handleBodyClick()">
-    <input id="serverIp" value="192.168.4.1" /><br>
+    <input id="serverIp" value="192.168.4.1" placeholder="Server IP Address" /><br>
     <textarea id="inputbox" placeholder="Paste text here..."></textarea>
-    <p id="status" style="color: red;">Disconnected</p>
-    <p id="avgSpd" style="">0 WPM</p>
+    <div class="speedbox">
+        <div class="speedbox__score" id="speedbox-score"></div>
+        <div class="speedbox__odo">
+            <p id="status" style="color: red;">Disconnected</p>
+            <div class="speedbox__down"><i class="fa fa-arrow-circle-up"></i>
+                <span id="avgSpd"></span>
+            </div>
+        </div>
+        <div class="speedbox__base"></div>
+    </div>
 </body>
 
 </html>

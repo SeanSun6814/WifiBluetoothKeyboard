@@ -1,14 +1,15 @@
-let inputbox, serverIpInputbox, statusBox, avgSpeedBox;
+let inputbox, serverIpInputbox, statusBox, avgSpeedBox, speedometerProgressbar;
 let modifierKeyDown = { "Shift": false, "Alt": false, "Control": false };
 let sendQueue = [];
 let sleeping = true;
-let avgSpeed = 0, requestCount = 0, avgSpeedStartTime = 0;
+let avgSpeed = 0, requestCount = 0, avgSpeedStartTime = 0, avgSpeedBackgroundWorker = false;
 
 function init() {
     inputbox = document.getElementById("inputbox");
     serverIpInputbox = document.getElementById("serverIp");
     statusBox = document.getElementById("status");
     avgSpeedBox = document.getElementById("avgSpd");
+    speedometerProgressbar = document.getElementById("speedbox-score");
 
     inputbox.oninput = inputboxHandler;
     document.body.addEventListener('keyup', (event) => {
@@ -38,9 +39,19 @@ function init() {
     updateConnectionStatus();
     setInterval(() => {
         updateConnectionStatus();
-    }, 5000);
+    }, 10000);
+    updateAvgSpeedLabel(0);
+    createAvgSpeedBackgroundWorker();
+}
+
+function createAvgSpeedBackgroundWorker() {
     avgSpeedStartTime = getMillis();
-    setInterval(() => { updateRunningAverage() }, 500);
+    avgSpeedBackgroundWorker = setInterval(() => { updateRunningAverage() }, 200);
+}
+
+function removeAvgSpeedBackgroundWorker() {
+    clearInterval(avgSpeedBackgroundWorker);
+    avgSpeedBackgroundWorker = false;
 }
 
 function handleBodyClick() {
@@ -77,10 +88,18 @@ function updateStatusLabel(connected) {
 function updateAvgSpeedLabel(reqPerSec) {
     let wpm = reqPerSec * 60 / 7;
     avgSpeedBox.innerHTML = Math.floor(wpm) + " WPM";
+
+    let percent = wpm * 100 / 70;
+    if (Math.floor(wpm) === 0) {
+        removeAvgSpeedBackgroundWorker();
+        percent = 0;
+    }
+    updatedSpeed = Math.round(percent * 180 / 100) - 45;
+    speedometerProgressbar.style.transform = "rotate(" + updatedSpeed + "deg)";
 }
 
 function updateRunningAverage() {
-    let avgWindowSize = 3;
+    let avgWindowSize = 4;
     let newValue = requestCount * 1000 / (getMillis() - avgSpeedStartTime);
     avgSpeed -= avgSpeed / avgWindowSize;
     avgSpeed += newValue / avgWindowSize;
@@ -110,6 +129,10 @@ function handleStringArrInput() {
         if (data.status !== 200)
             console.log("REQUEST_FAILED [" + data.status + "]: " + requestUrl + "" + data.res);
         // console.log(data);
+        if (data.status === 200 && char !== "status") {
+            requestCount++;
+            if (avgSpeedBackgroundWorker === false) createAvgSpeedBackgroundWorker();
+        }
         handleStringArrInput();
     });
 }
@@ -120,7 +143,6 @@ function makeRequest(url, callback) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4) {
             updateStatusLabel(xmlHttp.status === 200);
-            if (xmlHttp.status === 200) requestCount++;
             callback({ status: xmlHttp.status, res: xmlHttp.responseText });
         }
     }
