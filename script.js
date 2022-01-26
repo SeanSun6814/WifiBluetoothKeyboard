@@ -1,4 +1,4 @@
-let inputbox, serverIpInputbox, statusBox, avgSpeedBox, speedometerProgressbar;
+let inputbox, serverIpInputbox, statusBox, avgSpeedBox, speedometerProgressbar, queueSizeBox;
 let modifierKeyDown = { "Shift": false, "Alt": false, "Control": false };
 let sendQueue = [];
 let sleeping = true;
@@ -10,6 +10,7 @@ function init() {
     statusBox = document.getElementById("status");
     avgSpeedBox = document.getElementById("avgSpd");
     speedometerProgressbar = document.getElementById("speedbox-score");
+    queueSizeBox = document.getElementById("queueSize");
 
     inputbox.oninput = inputboxHandler;
     document.body.addEventListener('keyup', (event) => {
@@ -77,8 +78,13 @@ function requestSend(code, isArr) {
     if (sleeping) {
         handleStringArrInput();
     }
+    updateQueueSizeLabel();
 }
 
+function updateQueueSizeLabel() {
+    queueSizeBox.innerHTML = "Clear Queue [" + sendQueue.length + "]";
+}
+    
 function updateStatusLabel(connected) {
     if(connected){
         statusBox.innerHTML = "Connected";
@@ -137,6 +143,7 @@ function handleStringArrInput() {
             requestCount++;
             if (avgSpeedBackgroundWorker === false) createAvgSpeedBackgroundWorker();
         }
+        updateQueueSizeLabel();
         handleStringArrInput();
     });
 }
