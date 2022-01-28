@@ -65,6 +65,10 @@ function onConnect() {
         requestListening = false;
     }
 }
+function handleClearQueueButton() {
+    clearSendQueue();
+    document.body.focus();
+}
 
 function onDisconnect() {
     clearSendQueue();
@@ -121,12 +125,19 @@ function addToDisplayText(arr) {
     let numLines = displayTextArr.length;
     let line = displayTextArr.pop();
     while (arr.length > 0) {
-        while (line.length < 50 && arr.length > 0) {
-            if (arr[0] === "status") {
-                arr.shift();
-                continue;
+        while (line.length < 40 && arr.length > 0) {
+            let c = arr.shift();
+            line += translateDisplayText(c);
+            if (c === "Backspace") {
+                if (line.length > 0) {
+                    line = line.substring(0, line.length - 1);
+                }
+                //  else {
+                //     displayTextArr.unshift("");
+                //     line = displayTextArr.pop();
+                // }
             }
-            line += arr.shift();
+                
         }
         displayTextArr.push(line);
         line = "";
@@ -140,7 +151,7 @@ function addToDisplayText(arr) {
 
 function updateDisplayText(reanimate) {
     let str = displayTextArr.join("<br>");
-    displayTextBox.innerHTML = str;
+    displayTextBox.innerHTML = str +"<span class='blinking-cursor'>|</span>";
     if (!reanimate) return;
     displayTextBox.style.animation = 'none';
     displayTextBox.offsetHeight; /* trigger reflow */
@@ -245,55 +256,75 @@ function getMillis() {
     return Date.now();
 }
 
+function translateDisplayText(a) {
+    if (a === "Enter") { return ""; }
+    else if (a === "Backspace") { return ""; }
+    else if (a === "ArrowUp") { return ""; }
+    else if (a === "ArrowDown") { return ""; }
+    else if (a === "ArrowLeft") { return ""; }
+    else if (a === "ArrowRight") { return ""; }
+    else if (a === "Delete") { return ""; }
+    else if (a === "Tab") { return ""; }
+    else if (a === "Escape") { return ""; }
+    else if (a === "ControlDown") { return ""; }
+    else if (a === "ShiftDown") { return ""; }
+    else if (a === "AltDown") { return ""; }
+    else if (a === "ControlUp") { return ""; }
+    else if (a === "ShiftUp") { return ""; }
+    else if (a === "AltUp") { return ""; }
+    else if (a === "status") { return ""; }
+    return a;
+}
+
 function translateRequest(a) {
-    if (a === "Enter") { return "ret" }
-    else if (a === "\n") { return "ret" }
-    else if (a === "Backspace") { return "bk" }
-    else if (a === "ArrowUp") { return "up" }
-    else if (a === "ArrowDown") { return "dn" }
-    else if (a === "ArrowLeft") { return "lf" }
-    else if (a === "ArrowRight") { return "rt" }
-    else if (a === "Delete") { return "de" }
-    else if (a === "Tab") { return "ta" }
-    else if (a === "Escape") { return "es" }
-    else if (a === "ControlDown") { return "ct" }
-    else if (a === "ShiftDown") { return "sf" }
-    else if (a === "AltDown") { return "al" }
-    else if (a === "ControlUp") { return "ctr" }
-    else if (a === "ShiftUp") { return "sfr" }
-    else if (a === "AltUp") { return "alr" }
-    else if (a === " ") { return "sp" }
-    else if (a === "`") { return "bt" }
-    else if (a === "~") { return "td" }
-    else if (a === "!") { return "em" }
-    else if (a === "@") { return "at" }
-    else if (a === "#") { return "ht" }
-    else if (a === "$") { return "dr" }
-    else if (a === "%") { return "pc" }
-    else if (a === "^") { return "pr" }
-    else if (a === "&") { return "ad" }
-    else if (a === "*") { return "st" }
-    else if (a === "(") { return "op" }
-    else if (a === ")") { return "cp" }
-    else if (a === "-") { return "ds" }
-    else if (a === "_") { return "us" }
-    else if (a === "=") { return "eq" }
-    else if (a === "+") { return "pl" }
-    else if (a === "[") { return "so" }
-    else if (a === "{") { return "co" }
-    else if (a === "]") { return "sc" }
-    else if (a === "}") { return "cc" }
-    else if (a === "\\") { return "bs" }
-    else if (a === "|") { return "vb" }
-    else if (a === ";") { return "sm" }
-    else if (a === ":") { return "cn" }
-    else if (a === "'") { return "sq" }
-    else if (a === "\"") { return "dq" }
-    else if (a === ",") { return "cm" }
-    else if (a === "<") { return "lt" }
-    else if (a === ".") { return "dt" }
-    else if (a === ">") { return "gt" }
-    else if (a === "/") { return "fs" }
-    else if (a === "?") { return "qm" }
+    if (a === "Enter") { return "ret"; }
+    else if (a === "\n") { return "ret"; }
+    else if (a === "Backspace") { return "bk"; }
+    else if (a === "ArrowUp") { return "up"; }
+    else if (a === "ArrowDown") { return "dn"; }
+    else if (a === "ArrowLeft") { return "lf"; }
+    else if (a === "ArrowRight") { return "rt"; }
+    else if (a === "Delete") { return "de"; }
+    else if (a === "Tab") { return "ta"; }
+    else if (a === "Escape") { return "es"; }
+    else if (a === "ControlDown") { return "ct"; }
+    else if (a === "ShiftDown") { return "sf"; }
+    else if (a === "AltDown") { return "al"; }
+    else if (a === "ControlUp") { return "ctr"; }
+    else if (a === "ShiftUp") { return "sfr"; }
+    else if (a === "AltUp") { return "alr"; }
+    else if (a === " ") { return "sp"; }
+    else if (a === "`") { return "bt"; }
+    else if (a === "~") { return "td"; }
+    else if (a === "!") { return "em"; }
+    else if (a === "@") { return "at"; }
+    else if (a === "#") { return "ht"; }
+    else if (a === "$") { return "dr"; }
+    else if (a === "%") { return "pc"; }
+    else if (a === "^") { return "pr"; }
+    else if (a === "&") { return "ad"; }
+    else if (a === "*") { return "st"; }
+    else if (a === "(") { return "op"; }
+    else if (a === ")") { return "cp"; }
+    else if (a === "-") { return "ds"; }
+    else if (a === "_") { return "us"; }
+    else if (a === "=") { return "eq"; }
+    else if (a === "+") { return "pl"; }
+    else if (a === "[") { return "so"; }
+    else if (a === "{") { return "co"; }
+    else if (a === "]") { return "sc"; }
+    else if (a === "}") { return "cc"; }
+    else if (a === "\\") { return "bs"; }
+    else if (a === "|") { return "vb"; }
+    else if (a === ";") { return "sm"; }
+    else if (a === ":") { return "cn"; }
+    else if (a === "'") { return "sq"; }
+    else if (a === "\"") { return "dq"; }
+    else if (a === ",") { return "cm"; }
+    else if (a === "<") { return "lt"; }
+    else if (a === ".") { return "dt"; }
+    else if (a === ">") { return "gt"; }
+    else if (a === "/") { return "fs"; }
+    else if (a === "?") { return "qm"; }
     return a;
 }

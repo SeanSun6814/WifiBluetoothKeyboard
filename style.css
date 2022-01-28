@@ -127,3 +127,19 @@ span {
 .displayText {
   font-size: 300%;
 }
+
+.blinking-cursor {
+  font-weight: 100;
+  color: #2e3d48;
+  animation: 1s blink step-start infinite;
+}
+
+@keyframes blink {
+  from,
+  to {
+    color: transparent;
+  }
+  50% {
+    color: grey;
+  }
+}
