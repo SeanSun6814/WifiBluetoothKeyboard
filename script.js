@@ -137,7 +137,6 @@ function addToDisplayText(arr) {
                 //     line = displayTextArr.pop();
                 // }
             }
-                
         }
         displayTextArr.push(line);
         line = "";

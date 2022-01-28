@@ -105,14 +105,15 @@ span {
   height: 12em;
   line-height: 3.2em;
   position: relative;
+  left: 10%;
   overflow: hidden;
-  width: 1000em;
 }
 .scroller > span {
   position: absolute;
   top: 0;
   animation: slide 0.5s forwards ease-out;
   font-weight: bold;
+  margin: auto;
 }
 
 @keyframes slide {
