@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body onload="init()" onclick="handleBodyClick()">
+<body onload="init()">
     <input id="serverIp" value="192.168.4.1" placeholder="Server IP Address" />
     <button onclick="clearSendQueue()" id="queueSize">Clear Queue</button>
     <br>
     <textarea id="inputbox" placeholder="Paste text here..."></textarea>
     <div class="speedbox">
-        <div class="speedbox__score" id="speedbox-score"></div>
+        <div class="speedbox__score" id="speedbox-score" onclick="handleConnectButton();"></div>
         <div class="speedbox__odo">
             <p id="status" style="color: red;">Disconnected</p>
             <div class="speedbox__down"><i class="fa fa-arrow-circle-up"></i>
@@ -22,6 +22,10 @@
             </div>
         </div>
         <div class="speedbox__base"></div>
+    </div>
+    <div class="scroller">
+        <span class="displayText" id="displayText">This is the first line <br>second line <br>third line<br>forth
+            line.</span>
     </div>
 </body>
 
