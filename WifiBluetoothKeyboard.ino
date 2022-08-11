@@ -1,10 +1,10 @@
+#define LED_BUILTIN 2   
+#define USING_CORS_FEATURE true
+
 #include <BleKeyboard.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiAP.h>
-
-#define LED_BUILTIN 2   
-#define USING_CORS_FEATURE true
 
 const char *ssid = "WifiKeyboard";
 const char *password = "mySecretPassword";
