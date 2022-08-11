@@ -12,4 +12,4 @@ Use your laptop keyboard to type on your phone or iPad.
 6. Connect to esp32's wifi on laptop
 7. Connect to esp32's bluetooth on phone
 8. Open `index.html` on laptop
-9. Start typing in textbox
+9. Start typing when showing `connected`
