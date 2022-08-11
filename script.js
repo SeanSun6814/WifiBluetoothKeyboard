@@ -186,7 +186,7 @@ function updateAvgSpeedLabel(reqPerSec) {
     let wpm = reqPerSec * 60 / 7;
     avgSpeedBox.innerHTML = Math.floor(wpm) + " WPM";
 
-    let percent = wpm * 100 / 70;
+    let percent = wpm * 100 / 210;
     if (Math.floor(wpm) === 0) {
         removeAvgSpeedBackgroundWorker();
         percent = 0;
@@ -220,7 +220,7 @@ function handleStringArrInput() {
     }
     let char = sendQueue.shift();
     // console.log("SendSeq: char[" + char + "], str[" + str + "]");
-    let requestUrl = "http://" + serverIpInputbox.value + "/" + translateRequest(char) + "/EF/";
+    let requestUrl = "http://" + serverIpInputbox.value + "/" + translateRequest(char) + "/";
     console.log("requestUrl: " + requestUrl);
     makeRequest(requestUrl, (data) => {
         if (data.status !== 200)
